@@ -9,11 +9,16 @@ variables:
     --label org.opencontainers.image.source=$CI_PROJECT_URL
     --label vcs-url=$CI_PROJECT_URL
 stages:          
+  - pre
   - build
-
+test:
+  stage: pre
+  script:
+    - export
+    
 .build_docker_push:
   image:
-    name: gcr.io/kaniko-project/executor:latest
+    name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
     - export
