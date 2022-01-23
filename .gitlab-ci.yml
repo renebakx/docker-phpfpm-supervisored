@@ -2,6 +2,14 @@
 variables:
   PHP74: $PHP74
   PHP80: $PHP80
+  KANIKO_CACHE_ARGS: "--cache=true --cache-copy-layers=true --cache-ttl=24h"
+  IMAGE_LABELS: >
+    --label org.opencontainers.image.vendor=ARA
+    --label org.opencontainers.image.authors=René Bakx
+    --label org.opencontainers.image.source=$CI_PROJECT_URL
+    --label vcs-url=$CI_PROJECT_URL
+stages:          
+  - build
 
 .build_docker_push:
   image:
@@ -11,26 +19,28 @@ variables:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - when: manual 
-
-stages:          
-  - build
-
-build setup :
- extends: .build_docker_push
- stage: .pre
- script:
-    - echo "Building for tags '$CI_REGISTRY_IMAGE:$PHP74' and '$CI_REGISTRY_IMAGE:$PHP80'"
-    - mkdir -p kaniko/.docker
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-
+  script:
+    - |
+      echo "Building for tags 'CI_REGISTRY_IMAGE:$PHP74' and 'CI_REGISTRY_IMAGE:$PHP80'"
+      BUILDDATE="'$(date '+%FT%T%z' | sed -E -n 's/(\+[0-9]{2})([0-9]{2})$/\1:\2/p')'" #rfc 3339 date
+      IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.created=$BUILDDATE --label build-date=$BUILDDATE"
+      mkdir -p /kaniko/.docker
+      echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
+      
 build docker 1:2 :
   extends: .build_docker_push
   stage: build
   script:
-    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP74
+    - |
+      BUILDTITLE=$(echo $CI_PROJECT_TITLE $PHP74| tr " " "_")
+      IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE
+      /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS --tag $CI_REGISTRY_IMAGE:$PHP74 $IMAGE_LABELS
 
 build docker 2:2 :
   extends: .build_docker_push
   stage: build
   script:
-    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php80/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP80
+   - |
+      BUILDTITLE=$(echo $CI_PROJECT_TITLE $PHP80| tr " " "_")
+      IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE
+      /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS --tag $CI_REGISTRY_IMAGE:$PHP80  $IMAGE_LABELS
