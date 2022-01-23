@@ -19,10 +19,10 @@ stages:
      - BUILD_CONTEXT="--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
      - BUILD_DESTINATION="--destination $CI_REGISTRY_IMAGE:$BUILD_TAG"
      - IMAGE_LABELS="$IMAGE_LABELS $IMAGE_TITLE_LABEL"
-     - echo "/kaniko/executor --context $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS"
+     - echo "Debug : /kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS"
      - mkdir -p /kaniko/.docker
      - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
-    #  - /kaniko/executor --context $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
+     - /kaniko/executor BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
 
 build docker 1:2 :
   extends: .build_docker_push
