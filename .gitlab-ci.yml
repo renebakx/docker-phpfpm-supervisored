@@ -16,13 +16,12 @@ stages:
   - build
 
 build setup :
+ extends: .build_docker_push
  stage: .pre
  script:
     - echo "Building for tags '$CI_REGISTRY_IMAGE:$PHP74' and '$CI_REGISTRY_IMAGE:$PHP80'"
-    - mkdir -p /kaniko/.docker
+    - mkdir -p kaniko/.docker
     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
- rules:
-  - when: manual 
 
 build docker 1:2 :
   extends: .build_docker_push
