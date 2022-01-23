@@ -30,7 +30,7 @@ build docker 1:2 :
   stage: build
   variables:
     DOCKER_CONTEXT: $DOCKER_CONTEXT/php74
-    BUILD_DESTINATION: $BUILD_DESTINATION:$PHP74_VERSION
+    BUILD_DESTINATION: $PHP74_VERSION
     IMAGE_LABELS: $IMAGE_LABELS "--label org.opencontainers.image.title="NGINX - PHP-FPM $PHP74_VERSION"
 
 build docker 2:2 :
@@ -38,5 +38,5 @@ build docker 2:2 :
   stage: build
   variables:
     DOCKER_CONTEXT: $DOCKER_CONTEXT/php80
-    BUILD_DESTINATION: $BUILD_DESTINATION:$PHP80_VERSION
+    BUILD_DESTINATION: $PHP80_VERSION
     IMAGE_LABELS: $IMAGE_LABELS "--label org.opencontainers.image.title="NGINX - PHP-FPM $PHP80_VERSION"
