@@ -2,6 +2,7 @@
 variables:
   PHP74: $PHP74
   PHP80: $PHP80
+
 .build_docker_push:
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -10,18 +11,26 @@ variables:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - when: manual 
+
 stages:          
   - build
+
+build setup :
+ stage: .pre
+ script:
+    - echo "Building for tags 'CI_REGISTRY_IMAGE:$PHP74' and 'CI_REGISTRY_IMAGE:$PHP80'"
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+
 
 build docker 1:2 :
   extends: .build_docker_push
   stage: build
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP74
+
 build docker 2:2 :
   extends: .build_docker_push
   stage: build
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php80/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP80
