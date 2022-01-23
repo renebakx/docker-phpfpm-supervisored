@@ -5,7 +5,7 @@ variables:
   KANIKO_CACHE_ARGS: "--cache=true --cache-copy-layers=true --cache-ttl=24h"
   IMAGE_LABELS: >
     --label org.opencontainers.image.vendor=ARA
-    --label org.opencontainers.image.authors=René Bakx
+    --label org.opencontainers.image.authors="René Bakx"
     --label org.opencontainers.image.source=$CI_PROJECT_URL
     --label vcs-url=$CI_PROJECT_URL
 stages:          
