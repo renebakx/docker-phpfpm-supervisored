@@ -13,7 +13,7 @@ stages:
 
 .build_docker_push:
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: gcr.io/kaniko-project/executor:latest
     entrypoint: [""]    
   script:
     - export
@@ -29,7 +29,7 @@ build docker 1:2 :
   script:
     - BUILDTITLE=$(echo $CI_PROJECT_TITLE| tr " " "_")
     - IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE"
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS --tag $CI_REGISTRY_IMAGE:$PHP74 $IMAGE_LABELS
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS --destination $CI_REGISTRY_IMAGE:$PHP74 $IMAGE_LABELS
 
 build docker 2:2 :
   extends: .build_docker_push
@@ -37,4 +37,4 @@ build docker 2:2 :
   script:
    - BUILDTITLE=$(echo $CI_PROJECT_TITLE| tr " " "_")
    - IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE"
-   - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS --tag $CI_REGISTRY_IMAGE:$PHP80  $IMAGE_LABELS
+   - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile $KANIKO_CACHE_ARGS ---destination $CI_REGISTRY_IMAGE:$PHP80  $IMAGE_LABELS
