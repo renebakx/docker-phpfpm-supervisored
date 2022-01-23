@@ -1,4 +1,3 @@
-
 FROM nginx:1.21-alpine as nginx
 LABEL Maintainer="Rene Bakx <rene.bakx@ara.nl>" \
       Description="php-fpm 7.4 NGINX base image, asumes your code is added to /var/www and the webroot is /var/www/public"
@@ -40,7 +39,7 @@ RUN apk --update --no-cache add \
     jpegoptim \
     optipng \
     pngquant && rm -rf /var/cache/apk/*
-COPY .docker/rootfs /
+COPY rootfs /
 RUN mkdir -p /var/www
 WORKDIR /var/www
 RUN set -x ; \
