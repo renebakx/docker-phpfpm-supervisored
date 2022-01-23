@@ -1,45 +1,42 @@
-# This should contain the versions
 variables:
-  PHP74: $PHP74
-  PHP80: $PHP80
+  PHP74_VERSION: $PHP74
+  PHP80_VERSION: $PHP80
+  DOCKER_CONTEXT: $CI_PROJECT_DIR
+  BUILD_DESTINATION: "--destination $CI_REGISTRY_IMAGE"
   KANIKO_CACHE_ARGS: "--cache=true --cache-copy-layers=true --cache-ttl=24h"
   IMAGE_LABELS: >
     --label org.opencontainers.image.vendor=ARA
     --label org.opencontainers.image.authors=rene.bakx
     --label org.opencontainers.image.source=$CI_PROJECT_URL
     --label vcs-url=$CI_PROJECT_URL
+    --label build-date=$CI_JOB_STARTED_AT
+
+
 stages:          
-  - pre
   - build
-test:
-  stage: pre
-  script:
-    - export
 
 .build_docker_push:
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: gcr.io/kaniko-project/executor:latest
     entrypoint: [""]    
   script:
-    - export
-    - echo -n "Building $CI_REGISTRY_IMAGE : $PHP74 & $PHP80"
-    - BUILDDATE="'$(date '+%FT%T%z' | sed -E -n 's/(\+[0-9]{2})([0-9]{2})$/\1:\2/p')'" #rfc 3339 date
-    - IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.created=$BUILDDATE --label build-date=$BUILDDATE"
+    - echo -n "Building $BUILD_DESTINATION"
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
-      
+    - /kaniko/executor --context $DOCKER_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
+
 build docker 1:2 :
   extends: .build_docker_push
   stage: build
-  script:
-    - BUILDTITLE=$(echo $CI_PROJECT_TITLE| tr " " "_")
-    - IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE"
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile $KANIKO_CACHE_ARGS --destination $CI_REGISTRY_IMAGE:$PHP74 $IMAGE_LABELS
+  variables:
+    DOCKER_CONTEXT: $DOCKER_CONTEXT/php74
+    BUILD_DESTINATION: $BUILD_DESTINATION:$PHP74_VERSION
+    IMAGE_LABELS: $IMAGE_LABELS "--label org.opencontainers.image.title="NGINX - PHP-FPM $PHP74_VERSION"
 
 build docker 2:2 :
   extends: .build_docker_push
   stage: build
-  script:
-   - BUILDTITLE=$(echo $CI_PROJECT_TITLE| tr " " "_")
-   - IMAGE_LABELS="$IMAGE_LABELS --label org.opencontainers.image.title=$BUILDTITLE"
-   - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php80/Dockerfile $KANIKO_CACHE_ARGS ---destination $CI_REGISTRY_IMAGE:$PHP80  $IMAGE_LABELS
+  variables:
+    DOCKER_CONTEXT: $DOCKER_CONTEXT/php80
+    BUILD_DESTINATION: $BUILD_DESTINATION:$PHP80_VERSION
+    IMAGE_LABELS: $IMAGE_LABELS "--label org.opencontainers.image.title="NGINX - PHP-FPM $PHP80_VERSION"
