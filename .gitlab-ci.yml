@@ -18,9 +18,9 @@ stages:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
-     - BUILD_CONTEXT = "--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
-     - BUILD_DESTINATION = "--destination $CI_REGISTRY_IMAGE:$BUILD_TAG"
-     - IMAGE_LABELS = "$IMAGE_LABELS $IMAGE_TITLE_LABEL"
+     - BUILD_CONTEXT="--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
+     - BUILD_DESTINATION="--destination $CI_REGISTRY_IMAGE:$BUILD_TAG"
+     - IMAGE_LABELS="$IMAGE_LABELS $IMAGE_TITLE_LABEL"
      - export
     # - echo "Building $BUILD_DESTINATION at $DOCKER_CONTEXT"
     # - mkdir -p /kaniko/.docker
