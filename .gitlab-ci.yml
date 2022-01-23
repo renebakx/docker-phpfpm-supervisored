@@ -22,12 +22,13 @@ stages:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
-    - DOCKER_CONTEXT = "$CI_PROJECT_DIR/$DOCKER_CONTEXT"
-    - BUILD_DESTINATION = "$BUILD_DESTINATION:$BUILD_TAG"
-    - echo "Building $BUILD_DESTINATION at $DOCKER_CONTEXT"
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $DOCKER_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
+     - export
+    # - DOCKER_CONTEXT = "$CI_PROJECT_DIR/$DOCKER_CONTEXT"
+    # - BUILD_DESTINATION = "$BUILD_DESTINATION:$BUILD_TAG"
+    # - echo "Building $BUILD_DESTINATION at $DOCKER_CONTEXT"
+    # - mkdir -p /kaniko/.docker
+    # - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
+    # - /kaniko/executor --context $DOCKER_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
 
 build docker 1:2 :
   extends: .build_docker_push
