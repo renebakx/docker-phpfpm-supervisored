@@ -17,7 +17,7 @@ stages:
 
 .build_docker_push:
   image:
-    name: gcr.io/kaniko-project/executor:latest
+    name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
     - echo -n "Building $BUILD_DESTINATION"
