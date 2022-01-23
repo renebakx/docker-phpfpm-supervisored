@@ -1,3 +1,7 @@
+# This should contain the versions
+variables:
+  PHP74: $PHP74
+  PHP80: $PHP80
 .build_docker_push:
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -14,11 +18,10 @@ build docker 1:2 :
   stage: build
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile --destination $CI_REGISTRY_IMAGE-7.4:latest
-
+    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP74
 build docker 2:2 :
   extends: .build_docker_push
   stage: build
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/.docker/Drupal.Dockerfile --destination $CI_REGISTRY_IMAGE-8.0:latest
+    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php80/Dockerfile --destination $CI_REGISTRY_IMAGE:$PHP80
