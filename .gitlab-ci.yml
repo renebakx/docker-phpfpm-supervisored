@@ -1,0 +1,24 @@
+.build_docker_push:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]    
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: manual 
+stages:          
+  - build
+
+build docker 1:2 :
+  extends: .build_docker_push
+  stage: build
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/php74/Dockerfile --destination $CI_REGISTRY_IMAGE-7.4:latest
+
+build docker 2:2 :
+  extends: .build_docker_push
+  stage: build
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor  --insecure --skip-tls-verify --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/.docker/Drupal.Dockerfile --destination $CI_REGISTRY_IMAGE-8.0:latest

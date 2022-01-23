@@ -1,0 +1,13 @@
+/public/sites/*/files/
+/patches/
+.idea/
+.vscode/
+.github/
+.gitlab-ci.yml
+.lando.yml
+.env
+.npm
+.ssh
+node_modules
+.DS_Store
+phpstan.neon
