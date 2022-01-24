@@ -46,5 +46,4 @@ RUN set -x ; \
   addgroup -g 82 -S www-data ; \
   adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1; \
   usermod -aG www-data nginx;
-USER www-data:www-data
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
