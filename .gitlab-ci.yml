@@ -22,8 +22,7 @@ stages:
      - mkdir -p /kaniko/.docker
      - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
      - /kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
-  workflow:
-    rules:
+  rules:
       - if: '$CI_PIPELINE_SOURCE == "web"'
         when: always
       - when: never
