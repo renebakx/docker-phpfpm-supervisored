@@ -13,7 +13,7 @@ stages:
 
 .build_docker_push:
   image:
-    name: gcr.io/kaniko-project/executor:latest
+    name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
      - BUILD_CONTEXT="--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
