@@ -16,7 +16,7 @@ stages:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]    
   script:
-     - BUILD_CONTEXT="--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
+     - BUILD_CONTEXT="--context $CI_REGISTRY/devops/registry/php-nginx:$BUILD_TAG"
      - PHP_VERSION=$(echo "${DOCKER_CONTEXT}" | sed s/php//g)
      - BUILD_DESTINATION="--destination $CI_REGISTRY_IMAGE:$BUILD_TAG --destination $CI_REGISTRY_IMAGE:$PHP_VERSION-latest"
      - echo "/kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS"
