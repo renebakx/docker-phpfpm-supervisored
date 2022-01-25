@@ -21,7 +21,7 @@ stages:
      - BUILD_DESTINATION="--destination $CI_REGISTRY/devops/registry/php-nginx:$BUILD_TAG --destination $CI_REGISTRY/devops/registry/php-nginx:$PHP_VERSION-latest"
      - echo "/kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS"
      - mkdir -p /kaniko/.docker
-     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
+     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $REGISTRY_WRITE_USER:$REGISTRY_WRITE_TOKEN | base64)\"}}}" > /kaniko/.docker/config.json
      - /kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
   rules:
       - if: '$CI_PIPELINE_SOURCE == "web"'
