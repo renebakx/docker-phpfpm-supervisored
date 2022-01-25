@@ -18,13 +18,12 @@ stages:
   script:
      - BUILD_CONTEXT="--context $CI_PROJECT_DIR/$DOCKER_CONTEXT"
      - REGISTRY_ACCESS_TOKEN="$(echo -n $REGISTRY_WRITE_USER:$REGISTRY_WRITE_TOKEN | base64)"
-     - echo $REGISTRY_ACCESS_TOKEN
      - PHP_VERSION=$(echo "${DOCKER_CONTEXT}" | sed s/php//g)
      - BUILD_DESTINATION="--destination $CI_REGISTRY/devops/registry/php-nginx:$BUILD_TAG --destination $CI_REGISTRY/devops/registry/php-nginx:$PHP_VERSION-latest"
      - echo "/kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS"
      - mkdir -p /kaniko/.docker
      - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $REGISTRY_ACCESS_TOKEN)\"}}}" > /kaniko/.docker/config.json
-    #  - /kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
+     - /kaniko/executor $BUILD_CONTEXT $KANIKO_CACHE_ARGS $BUILD_DESTINATION $IMAGE_LABELS
   rules:
       - if: '$CI_PIPELINE_SOURCE == "web"'
         when: always
