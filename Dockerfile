@@ -1,7 +1,7 @@
 FROM nginx:1.21-alpine as nginx
 ARG PHP_VERSION=7
 LABEL Maintainer="Rene Bakx <rene.bakx@quinzel.nl>" \
-      Description="php-fpm $PHP_VERSION NGINX base image, asumes your code is added to /var/www and the webroot is /var/www/public"
+      Description="php-fpm ${PHP_VERSION} NGINX base image, asumes your code is added to /var/www and the webroot is /var/www/public"
 # Install packages
 RUN echo "building ${PHP_VERSION}"
 RUN apk --update --no-cache add \
@@ -39,14 +39,15 @@ RUN apk --update --no-cache add \
     jpegoptim \
     optipng \
     pngquant 
-COPY rootfs /    
+COPY rootfs/etc /etc    
 RUN ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
 COPY php-fpm.d/www.conf etc/php${PHP_VERSION}/php-fpm.d/
 RUN  [ "$PHP_VERSION" = "7" ] && apk add --no-cache php7-mcrypt || apk add --no-cache php${PHP_VERSION}-sodium
-RUN mkdir -p /var/www && rm -rf /var/cache/apk/*
-WORKDIR /var/
-RUN set -x ; \
+RUN rm -rf /var/cache/apk/* && set -x ; \
   addgroup -g 82 -S www-data ; \
   adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1; \
-  usermod -aG www-data nginx;
+  usermod -aG www-data nginx; 
+WORKDIR /var/
+COPY --chown=www-data:www-data rootfs/var .  
+RUN chown -R www-data:www-data /var/log
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
